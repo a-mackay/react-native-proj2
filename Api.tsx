@@ -8,7 +8,7 @@ const API_KEY = "";
 //     director: string;
 // }
 
-interface SimpleMovieInfo {
+export interface SimpleMovieInfo {
     title: string;
     year: number;
     imdbId: string;
@@ -22,20 +22,16 @@ interface RawSimpleMovieInfo {
 
 export async function getMatchingMovies(searchTerm: string): Promise<SimpleMovieInfo[]> {
     try {
-        // const response = await fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&t=star+wars`);
-        // const response = await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=14efd281`)
-        // const response = await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${API_KEY}`)
-        const response = await fetch(`http://www.omdbapi.com/?s=star+wars&apikey=${API_KEY}`)
-        if (response.ok) {
-            const rawMovies: Array<RawSimpleMovieInfo> = (await response.json()).Search;
-            // console.log(typeof rawMovies)
-            const movies: SimpleMovieInfo[] = rawMovies.map(raw => toSimpleMovieInfo(raw));
-            console.log(movies);
-            return movies;
-        } else {
-            console.error("Movie API response was not ok");
-            return [];
-        }
+        return fakeSimpleMovieInfos()
+        // const response = await fetch(`http://www.omdbapi.com/?s=star+wars&apikey=${API_KEY}`)
+        // if (response.ok) {
+        //     const rawMovies: Array<RawSimpleMovieInfo> = (await response.json()).Search;
+        //     const movies: SimpleMovieInfo[] = rawMovies.map(raw => toSimpleMovieInfo(raw));
+        //     return movies;
+        // } else {
+        //     console.error("Movie API response was not ok");
+        //     return [];
+        // }
     } catch (error) {
         console.error(error);
         return [];
@@ -94,7 +90,7 @@ function toSimpleMovieInfo(raw: RawSimpleMovieInfo): SimpleMovieInfo {
 //     "imdbVotes": "848,707",
 //   }
 
-function fakeSimpleMovieInfos() {
+function fakeSimpleMovieInfos(): SimpleMovieInfo[] {
     return [
         {
           "imdbId": "tt0076759",
