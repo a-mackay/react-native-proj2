@@ -1,28 +1,41 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { getMovieData } from './Api';
+import { getMatchingMovies } from './Api';
 
-function Test() {
+interface TestProps {
+    navigation: any;
+}
+
+function Test({navigation}: TestProps) {
     return (
         <View style={styles.container}>
             <Text>Open up App.tsx to start working on your app!</Text>
             <Text>holla everybody</Text>
-            <Text>hiaoeu</Text>
+            <Text>bbb</Text>
+            <Button title="Clicky" onPress={() => navigation.navigate("Other")} />
         </View>
     );
+}
+
+function Other() {
+    return (
+        <View style={styles.container}>
+            <Text>HELLO</Text>
+        </View>
+    )
 }
 
 const Stack = createStackNavigator();
 
 export default function App() {
-    console.log("key");
-    getMovieData("fake");
+    getMatchingMovies("fake");
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Test" component={Test} />
+                <Stack.Screen name="Test" component={Test} options={{ title: "Testscreen" }}/>
+                <Stack.Screen name="Other" component={Other} options={{ title: "Otherscreen" }}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
