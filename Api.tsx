@@ -21,21 +21,80 @@ interface RawSimpleMovieInfo {
 }
 
 export async function getMatchingMovies(searchTerm: string): Promise<SimpleMovieInfo[]> {
+    searchTerm = sanitizeSearchTerm(searchTerm);
+    const searchUrlParam = toSearchUrlParam(searchTerm);
+
     try {
-        return fakeSimpleMovieInfos()
-        // const response = await fetch(`http://www.omdbapi.com/?s=star+wars&apikey=${API_KEY}`)
-        // if (response.ok) {
-        //     const rawMovies: Array<RawSimpleMovieInfo> = (await response.json()).Search;
-        //     const movies: SimpleMovieInfo[] = rawMovies.map(raw => toSimpleMovieInfo(raw));
-        //     return movies;
-        // } else {
-        //     console.error("Movie API response was not ok");
-        //     return [];
-        // }
+        // return fakeSimpleMovieInfos()
+        const response = await fetch(`http://www.omdbapi.com/?s=${searchUrlParam}&apikey=${API_KEY}`)
+        if (response.ok) {
+            const rawMovies: Array<RawSimpleMovieInfo> = (await response.json()).Search;
+            const movies: SimpleMovieInfo[] = rawMovies.map(raw => toSimpleMovieInfo(raw));
+            return movies;
+        } else {
+            console.error("Movie API response was not ok");
+            return [];
+        }
     } catch (error) {
         console.error(error);
         return [];
     }
+}
+
+export interface MovieDetails {
+    title: string,
+    year: string,
+    genre: string,
+    runtime: string,
+    imdbRating: string,
+}
+
+interface RawMovieDetails {
+    "Title": string,
+    "Year": string,
+    "Genre": string,
+    "Runtime": string,
+    imdbRating: string,
+}
+
+function toMovieDetails(raw: RawMovieDetails): MovieDetails {
+    return {
+        title: raw.Title,
+        year: raw.Year,
+        genre: raw.Genre,
+        runtime: raw.Runtime,
+        imdbRating: raw.imdbRating,
+    }
+}
+
+export async function getMovieInfo(imdbId: string): Promise<MovieDetails | null> {
+    try {
+        const res = await fetch(`http://www.omdbapi.com/?i=${imdbId}&apikey=${API_KEY}`);
+        console.log(`http://www.omdbapi.com/?i=${imdbId}&apikey=${API_KEY}`)
+        // console.log(res);
+        if (res.ok) {
+            const rawDetails: RawMovieDetails = (await res.json());
+            const details: MovieDetails = toMovieDetails(rawDetails);
+            return details;
+        } else {
+            console.error("Get movie info response was not ok");
+            return null
+        }
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+function sanitizeSearchTerm(searchTerm: string): string {
+    searchTerm = searchTerm.replace("&", "");
+    searchTerm = searchTerm.replace("+", "");
+    // etc
+    return searchTerm;
+}
+
+function toSearchUrlParam(searchTerm: string): string {
+    return searchTerm.replace(" ", "+");
 }
 
 function toSimpleMovieInfo(raw: RawSimpleMovieInfo): SimpleMovieInfo {
